@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация и Оплата Тарифа</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"], input[type="email"], input[type="password"], select {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .tariff-select {
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Регистрация и Оплата Тарифа</h1>
+
+    <!-- Форма регистрации -->
+    <form action="submit_registration.php" method="POST">
+        <label for="fullname">ФИО</label>
+        <input type="text" id="fullname" name="fullname" required placeholder="Введите ваше полное имя">
+
+        <label for="email">Электронная почта</label>
+        <input type="email" id="email" name="email" required placeholder="Введите ваш email">
+
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" required placeholder="Введите ваш пароль">
+
+        <label for="confirm_password">Подтверждение пароля</label>
+        <input type="password" id="confirm_password" name="confirm_password" required placeholder="Подтвердите ваш пароль">
+
+        <div class="tariff-select">
+            <label for="tariff">Выберите тариф</label>
+            <select id="tariff" name="tariff" required>
+                <option value="basic">LITE тариф</option>
+                <option value="premium">PRO тариф</option>
+                <option value="vip">VIP тариф</option>
+            </select>
+        </div>
+
+        <button type="submit">Зарегистрироваться и Оплатить</button>
+    </form>
+</div>
+
+<div class="footer">
+    <p>© 2025 vetkarazuma</p>
+</div>
+
+</body>
+</html>

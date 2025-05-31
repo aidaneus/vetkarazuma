@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дифференциальные уравнения | vetkarazuma.ru</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bh.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bh-style.css') }}">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.11.2/css/all.css">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .equation-display {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .solution-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+        }
+        .method-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .method-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .method-tab.active {
+            background-color: #f8f9fa;
+            border-color: #dee2e6 #dee2e6 #f8f9fa;
+        }
+        .graph-container {
+            margin-top: 20px;
+            height: 400px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body style="background-color: #F9F9F9">
+    <div id="page-container" class="page-header-fixed page-header-glass main-content-boxed">
+        <header id="page-header">
+            <div class="content-header">
+                <div class="d-flex align-items-center">
+                    <a href="/">
+                        <img class="bh-logo" src="{{ url_for('static', filename='img/logo.png') }}">
+                    </a>
+                </div>
+                <div class="content-header-right">
+                    <div class="bh-header-menu d-flex">
+                        <a class="bh-menulink" href="/">Главная</a>
+                        <a class="bh-menulink" href="#">Войти</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-container">
+            <div class="content content-boxed">
+                <div class="bh-title text-center">Дифференциальные уравнения</div>
+                <div class="bh-subtitle text-center mb-5">Генератор и решатель дифференциальных уравнений</div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="text-center mb-4">Генератор уравнений</h4>
+                                <div class="input-group">
+                                    <label for="equationType">Тип уравнения:</label>
+                                    <select id="equationType" class="form-control">
+                                        <option value="1">Уравнение, разрешенное относительно производной</option>
+                                        <option value="2">Линейное уравнение с постоянными коэффициентами</option>
+                                        <option value="3">Уравнение с разделенными переменными</option>
+                                        <option value="4">Уравнение с разделяющимися переменными</option>
+                                        <option value="5">Однородное уравнение</option>
+                                        <option value="6">Уравнение, приводимое к однородному</option>
+                                        <option value="7">Точное уравнение в полных дифференциалах</option>
+                                        <option value="8">Неточное уравнение в полных дифференциалах</option>
+                                        <option value="9">Все варианты уравнений</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="orderInput" class="input-group" style="display: none;">
+                                    <label for="equationOrder">Порядок уравнения:</label>
+                                    <input type="number" id="equationOrder" min="1" max="5" value="2" class="form-control">
+                                </div>
+                                
+                                <button id="generateBtn" class="bh-button w-100">Сгенерировать уравнение</button>
+                                
+                                <div id="equationResult" class="equation-display mt-3" style="display: none;">
+                                    <div id="equationTypeDisplay" class="font-weight-bold"></div>
+                                    <div id="equationContent"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="text-center mb-4">Решение уравнения</h4>
+                                <div class="input-group">
+                                    <label for="customEquation">Или введите свое уравнение (y' = f(x,y)):</label>
+                                    <input type="text" id="customEquation" class="form-control" placeholder="Например: 4*x + 4*y">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="x0">Начальное значение x0:</label>
+                                    <input type="number" id="x0" class="form-control" value="0" step="0.1">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="y0">Начальное значение y0:</label>
+                                    <input type="number" id="y0" class="form-control" value="1" step="0.1">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="step">Шаг h:</label>
+                                    <input type="number" id="step" class="form-control" value="0.1" step="0.01" min="0.01">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="steps">Количество шагов n:</label>
+                                    <input type="number" id="steps" class="form-control" value="100" min="1">
+                                </div>
+                                
+                                <button id="solveBtn" class="bh-button w-100">Решить уравнение</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="method-tabs mt-4">
+                    <div class="method-tab active" data-method="euler">Метод Эйлера</div>
+                    <div class="method-tab" data-method="runge-kutta">Метод Рунге-Кутты</div>
+                    <div class="method-tab" data-method="isocline">Метод изоклин</div>
+                </div>
+                
+                <div id="solutionContainer" class="solution-container" style="display: none;">
+                    <h4 id="solutionMethod"></h4>
+                    <div class="graph-container">
+                        <canvas id="solutionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer id="page-footer">
+            <div class="content content-boxed bh-footer">
+                <div class="bh-footer-line">
+                    <div class="bh-footer-line-info">© 2025 vetkarazuma.ru</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentMethod = 'euler';
+        let solutionChart = null;
+        
+        // Показываем поле для порядка, если выбран линейный тип
+        document.getElementById('equationType').addEventListener('change', function() {
+            const orderInput = document.getElementById('orderInput');
+            orderInput.style.display = this.value === '2' ? 'block' : 'none';
+        });
+
+        // Обработчик генерации уравнения
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const type = document.getElementById('equationType').value;
+            const order = type === '2' ? document.getElementById('equationOrder').value : null;
+            
+            fetch('/generate_ode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: type,
+                    order: order
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const equationResult = document.getElementById('equationResult');
+                const equationTypeDisplay = document.getElementById('equationTypeDisplay');
+                const equationContent = document.getElementById('equationContent');
+                
+                if (Array.isArray(data)) {
+                    equationTypeDisplay.textContent = 'Все типы уравнений:';
+                    let content = '<ul class="list-unstyled">';
+                    data.forEach(eq => {
+                        content += `<li><strong>${eq.type}</strong>: ${eq.equation}</li>`;
+                    });
+                    content += '</ul>';
+                    equationContent.innerHTML = content;
+                } else if (data.error) {
+                    equationTypeDisplay.textContent = 'Ошибка';
+                    equationContent.innerHTML = data.error;
+                } else {
+                    equationTypeDisplay.textContent = data.type;
+                    equationContent.innerHTML = `$$${data.equation}$$`;
+                    
+                    // Автоматически заполняем поле для решения
+                    // const equationText = data.equation.replace(/\\frac\{d[y]\}\{d[x]\} = /, '');
+                    // document.getElementById('customEquation').value = equationText
+                    //     .replace(/\\, d[x] \+ \\, d[y] = 0/, '')
+                    //     .replace(/\{x\}/g, 'x')
+                    //     .replace(/\{y\}/g, 'y');
+                }
+                
+                equationResult.style.display = 'block';
+                MathJax.typeset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при генерации уравнения');
+            });
+        });
+        
+        // Переключение методов решения
+        document.querySelectorAll('.method-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentMethod = this.dataset.method;
+                
+                // Если есть данные решения, перерисовываем график
+                if (document.getElementById('solutionContainer').style.display === 'block') {
+                    document.getElementById('solveBtn').click();
+                }
+            });
+        });
+        
+        // Обработчик решения уравнения
+        document.getElementById('solveBtn').addEventListener('click', function() {
+            const equation = document.getElementById('customEquation').value;
+            const x0 = parseFloat(document.getElementById('x0').value);
+            const y0 = parseFloat(document.getElementById('y0').value);
+            const h = parseFloat(document.getElementById('step').value);
+            const n = parseInt(document.getElementById('steps').value);
+            
+            if (!equation) {
+                alert('Пожалуйста, введите уравнение');
+                return;
+            }
+            
+            fetch('/solve_ode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    equation: equation,
+                    x0: x0,
+                    y0: y0,
+                    h: h,
+                    n: n,
+                    method: currentMethod
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                const solutionContainer = document.getElementById('solutionContainer');
+                const solutionMethod = document.getElementById('solutionMethod');
+                
+                solutionMethod.textContent = `Решение (${data.method})`;
+                solutionContainer.style.display = 'block';
+                
+                // Отрисовка графика
+                drawChart(data.x, data.y, data.method);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при решении уравнения');
+            });
+        });
+        
+        // Функция для отрисовки графика
+        function drawChart(xValues, yValues, methodName) {
+            const ctx = document.getElementById('solutionChart').getContext('2d');
+            
+            // Удаляем предыдущий график, если он есть
+            if (solutionChart) {
+                solutionChart.destroy();
+            }
+            
+            // Определяем цвет в зависимости от метода
+            let color;
+            switch(methodName) {
+                case 'Метод Эйлера': color = 'rgba(54, 162, 235, 1)'; break;
+                case 'Метод Рунге-Кутты 4-го порядка': color = 'rgba(75, 192, 192, 1)'; break;
+                case 'Метод изоклин': color = 'rgba(255, 99, 132, 1)'; break;
+                default: color = 'rgba(153, 102, 255, 1)';
+            }
+            
+            solutionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                        label: methodName,
+                        data: yValues,
+                        borderColor: color,
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'x'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'y'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

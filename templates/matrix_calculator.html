@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Matrix Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bh.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bh-style.css') }}">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.11.2/css/all.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .matrix-input {
+            display: inline-block;
+            margin: 10px;
+        }
+        .matrix-input input {
+            width: 50px;
+            margin: 2px;
+            text-align: center;
+        }
+        .operation-btn {
+            margin: 10px;
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .operation-btn:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .step-by-step {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab-button {
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border: none;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body style="background-color: #F9F9F9">
+    <div id="page-container" class="page-header-fixed page-header-glass main-content-boxed">
+        <header id="page-header">
+            <div class="content-header">
+                <div class="d-flex align-items-center">
+                    <a href="/">
+                        <img class="bh-logo" src="{{ url_for('static', filename='img/logo.png') }}">
+                    </a>
+                </div>
+                <div class="content-header-right">
+                    <div class="bh-header-menu d-flex">
+                        <a class="gotolink bh-menulink" href="/">Главная</a>
+                        <a class="gotolink bh-menulink" href="/linear_algebra">Линейная алгебра</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-container">
+            <div class="content content-boxed">
+                <div class="bh-title text-center">Матричный калькулятор</div>
+                <div class="bh-subtitle text-center mb-5">Выполнение операций над матрицами с пошаговым решением</div>
+
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="tabs">
+                                    <button class="tab-button active" onclick="openTab('basic-operations')">Базовые операции</button>
+                                    <button class="tab-button" onclick="openTab('advanced-operations')">Продвинутые операции</button>
+                                </div>
+
+                                <div id="basic-operations" class="tab-content active">
+                                    <div class="form-group">
+                                        <label>Размер матрицы:</label>
+                                        <input type="number" id="matrix-size" min="1" max="6" value="2" class="form-control" style="width: 100px;">
+                                        <button onclick="createMatrixInputs()" class="bh-button-sm mt-2">Создать матрицы</button>
+                                    </div>
+
+                                    <div id="matrix-inputs" class="mt-4">
+                                        <div class="matrix-input">
+                                            <h5>Матрица A</h5>
+                                            <div id="matrix-a"></div>
+                                        </div>
+                                        <div class="matrix-input">
+                                            <h5>Матрица B</h5>
+                                            <div id="matrix-b"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <button onclick="performOperation('sum')" class="operation-btn">Сложение (A+B)</button>
+                                        <button onclick="performOperation('mult')" class="operation-btn">Умножение (A×B)</button>
+                                        <button onclick="performOperation('transpose')" class="operation-btn">Транспонировать A</button>
+                                    </div>
+                                </div>
+
+                                <div id="advanced-operations" class="tab-content">
+                                    <div class="form-group">
+                                        <label>Размер квадратной матрицы:</label>
+                                        <input type="number" id="advanced-matrix-size" min="1" max="6" value="2" class="form-control" style="width: 100px;">
+                                        <button onclick="createAdvancedMatrixInput()" class="bh-button-sm mt-2">Создать матрицу</button>
+                                    </div>
+
+                                    <div id="advanced-matrix-input" class="mt-4">
+                                        <div class="matrix-input">
+                                            <h5>Матрица A</h5>
+                                            <div id="single-matrix"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <button onclick="performOperation('eigen')" class="operation-btn">Собственные значения/векторы</button>
+                                        <button onclick="performOperation('inverse')" class="operation-btn">Обратная матрица</button>
+                                        <button onclick="performOperation('exp')" class="operation-btn">Матричная экспонента</button>
+                                        <button onclick="performOperation('sin')" class="operation-btn">sin(A)</button>
+                                        <button onclick="performOperation('cos')" class="operation-btn">cos(A)</button>
+                                    </div>
+                                </div>
+
+                                <div id="result" class="mt-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer id="page-footer">
+            <div class="content content-boxed bh-footer">
+                <div class="bh-footer-line">
+                    <div class="bh-footer-line-info">© 2025 vetkarazuma.ru</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function openTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Activate the selected tab and button
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function createMatrixInputs() {
+            const size = parseInt(document.getElementById('matrix-size').value);
+            let htmlA = '';
+            let htmlB = '';
+            
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    htmlA += `<input type="number" id="a-${i}-${j}" value="${i === j ? 1 : 0}" class="form-control">`;
+                    htmlB += `<input type="number" id="b-${i}-${j}" value="${i === j ? 1 : 0}" class="form-control">`;
+                }
+                htmlA += '<br>';
+                htmlB += '<br>';
+            }
+            
+            document.getElementById('matrix-a').innerHTML = htmlA;
+            document.getElementById('matrix-b').innerHTML = htmlB;
+        }
+
+        function createAdvancedMatrixInput() {
+            const size = parseInt(document.getElementById('advanced-matrix-size').value);
+            let html = '';
+            
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    html += `<input type="number" id="m-${i}-${j}" value="${i === j ? 1 : 0}" class="form-control">`;
+                }
+                html += '<br>';
+            }
+            
+            document.getElementById('single-matrix').innerHTML = html;
+        }
+
+        function getMatrixFromInputs(prefix, size) {
+            const matrix = [];
+            for (let i = 0; i < size; i++) {
+                const row = [];
+                for (let j = 0; j < size; j++) {
+                    const val = parseFloat(document.getElementById(`${prefix}-${i}-${j}`).value) || 0;
+                    row.push(val);
+                }
+                matrix.push(row);
+            }
+            return matrix;
+        }
+
+        function performOperation(operation) {
+            let size, matrix1, matrix2;
+            
+            if (operation === 'sum' || operation === 'mult') {
+                size = parseInt(document.getElementById('matrix-size').value);
+                matrix1 = getMatrixFromInputs('a', size);
+                matrix2 = getMatrixFromInputs('b', size);
+            } else {
+                size = operation === 'transpose' ? 
+                    parseInt(document.getElementById('matrix-size').value) : 
+                    parseInt(document.getElementById('advanced-matrix-size').value);
+                matrix1 = operation === 'transpose' ? 
+                    getMatrixFromInputs('a', size) : 
+                    getMatrixFromInputs('m', size);
+            }
+
+            fetch('/matrix_operation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    operation: operation,
+                    matrix1: matrix1,
+                    matrix2: operation === 'sum' || operation === 'mult' ? matrix2 : null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let resultHtml = `<h4>Результат:</h4>`;
+                
+                if (data.result) {
+                    if (Array.isArray(data.result)) {
+                        resultHtml += `<div class="matrix-result">`;
+                        data.result.forEach(row => {
+                            resultHtml += `<div>[ ${row.map(val => val.toFixed(4)).join(', ')} ]</div>`;
+                        });
+                        resultHtml += `</div>`;
+                    } else if (typeof data.result === 'object' && data.result !== null) {
+                        // For eigenvalues/vectors
+                        resultHtml += `<div class="eigen-result">`;
+                        if (data.result.eigenvalues) {
+                            resultHtml += `<h5>Собственные значения:</h5>`;
+                            data.result.eigenvalues.forEach((val, i) => {
+                                resultHtml += `<div>λ${i+1} = ${val}</div>`;
+                            });
+                        }
+                        if (data.result.eigenvectors) {
+                            resultHtml += `<h5>Собственные векторы:</h5>`;
+                            data.result.eigenvectors.forEach((vec, i) => {
+                                resultHtml += `<div>v${i+1} = [ ${vec.map(val => val.toFixed(4)).join(', ')} ]</div>`;
+                            });
+                        }
+                        resultHtml += `</div>`;
+                    } else {
+                        resultHtml += `<div>${data.result}</div>`;
+                    }
+                }
+                
+                if (data.steps) {
+                    resultHtml += `<h4>Пошаговое решение:</h4>`;
+                    resultHtml += `<div class="step-by-step">${data.steps.replace(/\n/g, '<br>')}</div>`;
+                }
+                
+                document.getElementById('result').innerHTML = resultHtml;
+                MathJax.typeset(); // Render LaTeX if any
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `<div class="alert alert-danger">Ошибка: ${error.message}</div>`;
+            });
+        }
+
+        // Initialize matrices on page load
+        window.onload = function() {
+            createMatrixInputs();
+            createAdvancedMatrixInput();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <meta name="robots" content="all">
+        <title>vetkarazuma.ru - Решалка не выросла ОДУ,СЛАУ</title>
+		<meta name="description" content="Cамый лучший сайт для чайников (от таких же чайников) с возможностью быстро и удобно получать ответы">
+		<meta name="keywords" content="математика,ответы, решение,диффуры.">
+
+        <meta property="og:title" content="vetkarazuma.ru - Решалка не выросла ОДУ,СЛАУ"/>
+        <meta property="og:site_name" content="vetkarazuma.ru - Решалка не выросла ОДУ,СЛАУ"/>
+        <meta property="og:description" content="Cамый лучший сайт для чайников (от таких же чайников) с возможностью быстро и удобно получать ответы"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:url" content="https://vetkarazuma.ru"/>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bh.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bh-style.css') }}">
+
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.11.2/css/all.css" integrity="sha384-zrnmn8R8KkWl12rAZFt4yKjxplaDaT7/EUkKm7AovijfrQItFWR7O/JJn4DAa/gx" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <body style="background-color: #F9F9F9">
+        <div id="page-container" class="page-header-fixed page-header-glass main-content-boxed">
+			<header id="page-header">
+				<div class="content-header">
+					<div class="d-flex align-items-center">
+							<img class="bh-logo" src="{{ url_for('static', filename='img/logo.png') }}">
+					</div>
+					<div class="content-header-right">
+						<div class="bh-header-menu d-flex">
+							<a class="gotolink bh-menulink" href="#">Тарифы</a>
+							<a class="gotolink d-none d-xl-inline-block bh-menulink" href="#">Решение</a>
+							<a class="bh-menulink" href="#">Войти</a>
+						</div>
+					</div>
+				</div>
+			</header>
+			<main id="main-container">
+				<div class="bh-mainbg" style="background-image: url('static/img/mainbg.jpg');">
+					<div class="bh-mainbg-block">
+						<div class="bh-mainbg-title">Решалка от чайников №1</div>
+						<div class="bh-mainbg-subtitle">Реши свою проблему с максимальным объяснением<br>закинь любой пример и запустите сервер</div>
+						<a href="/servers/order">
+							<button class="bh-button">Начать решение</button>
+						</a>
+					</div>
+				</div>
+				<div class="content content-boxed pt-0 mb-5" style="z-index: 50">
+					<div class="row margin-mainbg">
+						<div class="col-md-4 mb-4">
+							<div class="bh-advantages">
+								<i class="fad fa-desktop bh-advantages-icon"></i>
+								<div>
+									<div class="bh-advantages-title">Панель управления</div>
+									<div class="bh-advantages-text">Многофункциональная панель управления для создания и редактирования Вашего примера</div>
+								</div>
+							</div>
+							<div class="bh-advantages-down"></div>
+						</div>
+						<div class="col-md-4 mb-4">
+							<div class="bh-advantages">
+								<i class="fad fa-server bh-advantages-icon"></i>
+								<div>
+									<div class="bh-advantages-title">Надёжные решения</div>
+									<div class="bh-advantages-text">текст скоро будет</div>
+								</div>
+							</div>
+							<div class="bh-advantages-down"></div>
+						</div>
+						<div class="col-md-4 mb-4">
+							<div class="bh-advantages">
+								<i class="fad fa-users bh-advantages-icon"></i>
+								<div>
+									<div class="bh-advantages-title">Помощь в решении</div>
+									<div class="bh-advantages-text">Наши специалисты занимаются решением различных задач и помогают Вам сдать задачи вовремя</div>
+								</div>
+							</div>
+							<div class="bh-advantages-down"></div>
+						</div>
+					</div>
+				</div>
+				<div class="content content-boxed" id="tariffs">
+					<div class="bh-title text-center">Тарифы</div>
+					<div class="bh-subtitle text-center mb-6">Высокое качество. Выгодные цены.</div>
+					<div class="row gutters-tiny-big justify-content-center mb-6">
+						<div class="col-md-3 mb-4">
+							<div class="bg-tariffs">
+								<div class="bg-tariffs-up">
+									<div class="bg-tariffs-up-text">ОДУ</div>
+									<div class="bg-tariffs-up-subtext">Решение в течение 60 секунд</div>
+								</div>
+								<div style="background-color: rgba(247, 148, 48,0.1); margin-bottom: 40px; padding: 20px">
+									<div class="row text-center">
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">LITE</div>
+											<div class="bg-tariffs-prices-rub">100 	&#8381;</div>
+											<div class="bg-tariffs-prices-slots">за 1 решение</div>
+										</div>
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">VIP <i class="fas fa-badge-check"></i></div>
+											<div class="bg-tariffs-prices-rub">5000 	&#8381;</div>
+											<div class="bg-tariffs-prices-slots">70 решений</div>
+										</div>
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">PRO</div>
+											<div class="bg-tariffs-prices-rub">900 	&#8381;</div>
+											<div class="bg-tariffs-prices-slots">10 решений</div>
+										</div>
+									</div>
+								</div>
+								<div class="bg-tariffs-list">
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Генератор ОДУ (линенйные, общие, в полных дифференциалах)</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Пиблеженное решение ОДУ</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Решатель ОДУ (аналитический решатель)</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Метод изоклин</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Поддержка наших специалистов 24/7</div>
+									</div>
+								</div>
+								<div class="text-center">
+									<a href="/servers/order">
+										<button class="bh-button">Начать решение</button>
+									</a>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mb-4">
+							<div class="bg-tariffs bg-tariffs-center">
+								<div class="bg-tariffs-up">
+									<div class="bg-tariffs-up-text">Матричный калькулятор</div>
+									<div class="bg-tariffs-up-subtext">Решение в течение 60 секунд</div>
+								</div>
+								<div style="background-color: rgba(247, 148, 48,0.1); margin-bottom: 40px; padding: 20px">
+									<div class="row text-center">
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">LITE</div>
+											<div class="bg-tariffs-prices-rub">100 	&#8381;</div>
+											<div class="bg-tariffs-prices-slots">за 1 решение</div>
+										</div>
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">VIP <i class="fas fa-badge-check"></i></div>
+											<div class="bg-tariffs-prices-rub">5000 	&#8381;</div>
+											<div class="bg-tariffs-prices-slots">70 решений</div>
+										</div>
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">PRO</div>
+											<div class="bg-tariffs-prices-rub">900 	&#8381;</div>
+											<div class="bg-tariffs-prices-slots">10 решений</div>
+										</div>
+									</div>
+								</div>
+								<div class="bg-tariffs-list">
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Сложение</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Умножение</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Транспортирование</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Поиск собственных значений,собственных векторов</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Поддержка наших специалистов 24/7</div>
+									</div>
+								</div>
+								<div class="text-center">
+									<a href="/servers/order">
+										<button class="bh-button">Начать решение</button>
+									</a>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3  mb-4">
+							<div class="bg-tariffs">
+								<div class="bg-tariffs-up">
+									<div class="bg-tariffs-up-text">СЛАУ</div>
+									<div class="bg-tariffs-up-subtext">Решение в течение 60 секунд</div>
+								</div>
+								<div style="background-color: rgba(247, 148, 48,0.1); margin-bottom: 40px; padding: 20px">
+									<div class="row text-center">
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">LITE</div>
+											<div class="bg-tariffs-prices-rub">100 &#8381;</div>
+											<div class="bg-tariffs-prices-slots">за 1 решение</div>
+										</div>
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">VIP <i class="fas fa-badge-check"></i></div>
+											<div class="bg-tariffs-prices-rub">5000 	&#8381;</div>
+											<div class="bg-tariffs-prices-slots">70 решений</div>
+										</div>
+										<div class="col-4">
+											<div class="bg-tariffs-prices-name">PRO</div>
+											<div class="bg-tariffs-prices-rub">900 	&#8381;</div>
+											<div class="bg-tariffs-prices-slots">10 решений</div>
+										</div>
+									</div>
+								</div>
+								<div class="bg-tariffs-list">
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Метод Гаусса</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Метод Крамера</div>
+									</div>
+									<div>
+										<i class="fas fa-check-circle"></i>
+										<div>Поддержка наших специалистов 24/7 </div>
+									</div>
+									<div></div>
+									<div></div>
+								</div>
+								<div class="text-center">
+									<a href="/servers/order">
+										<button class="bh-button">Начать решение</button>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="content content-boxed" id="install">
+					<div class="bh-title text-center">Автогенератор контрольных работ</div>
+					<div class="bh-subtitle text-center mb-5">Генерация вайбовых работ в два клика</div>
+					<div class="row mb-4">
+						<div class="col-md-4 mb-4">
+							<div class="bh-mods-image aspect-ratio-16-9" style="background-image: url('static/img/evrp1.png');"></div>
+							<div class="bh-advantages-down-mods"></div>
+							<div class="bh-advantages-mods">
+								<div class="bh-advantages-title">Дифференциальные уравнения</div>
+								<div class="bh-advantages-text mb-3">ОДУ с разделяющими переменными/в полных дифференциалах, ЛОДУ с постоянными коэффициентами, уравнения Коши-Эйлера,метод Бернулли, метод вариации произвольных постоянных и т.д.</div>
+								<a href="/diff_eq">
+									<button class="bh-button-sm">Начать</button>
+								</a>
+							</div>
+						</div>
+						<div class="col-md-4 mb-4">
+							<div class="bh-mods-image aspect-ratio-16-9" style="background-image: url('static/img/arp1.png');"></div>
+							<div class="bh-advantages-down-mods"></div>
+							<div class="bh-advantages-mods">
+								<div class="bh-advantages-title">Линейная алгебра</div>
+								<div class="bh-advantages-text mb-3">Реализация методов решения СЛАУ. Генерация задач на нахождение собственных значений и векторов заданных матриц.</div>
+								<a href="/linear_algebra">
+									<button class="bh-button-sm">Начать</button>
+								</a>
+							</div>
+						</div>
+						<div class="col-md-4 mb-4">
+							<div class="bh-mods-image aspect-ratio-16-9" style="background-image: url('static/img/advancerp1.png');"></div>
+							<div class="bh-advantages-down-mods"></div>
+							<div class="bh-advantages-mods">
+								<div class="bh-advantages-title">Матричный калькулятор</div>
+								<div class="bh-advantages-text mb-3">Решение матриц</div>
+								<a href="/matrix_calculator">
+									<button class="bh-button-sm">Начать</button>
+								</a>
+							</div>
+						</div>
+						<div class="col-md-4 mb-4">
+							<div class="bh-mods-image aspect-ratio-16-9" style="background-image: url('static/img/advancerp1.png');"></div>
+							<div class="bh-advantages-down-mods"></div>
+							<div class="bh-advantages-mods">
+								<div class="bh-advantages-title">Генератор всех типов заданий</div>
+								<div class="bh-advantages-text mb-3">Генерация различных 30 типов заданий</div>
+								<a href="/servers/autoinstall">
+									<button class="bh-button-sm">Начать</button>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="bh-mainbg-down" style="background-image: url('static/img/mainbg.jpg');">
+					<div class="bh-mainbg-block">
+						<div class="bh-mainbg-title">Готовы начать раоту?</div>
+						<div class="bh-mainbg-subtitle">В панели управления можно заказать решение за 5 минут</div>
+						<a href="/servers/order">
+							<button class="bh-button">Начать работу</button>
+						</a>
+					</div>
+				</div>
+			</main>
+			<footer id="page-footer">
+				<div class="content content-boxed bh-footer">
+					<div class="bh-footer-line">
+						<div class="bh-footer-line-info">© 2025 vetkarazuma.ru</div>
+						<div class="bh-footer-line-info d-flex align-items-center">
+						</div>
+					</div>
+				</div>
+			</footer>
+
+			<script>
+            $(document).ready(function() {
+                $(document).delegate('.gotolink', 'click', function(e) {
+                    e.preventDefault();
+                    var id  = $(this).attr('href'),
+                        top = $(id).offset().top - 110;
+                    $('body,html').animate({scrollTop: top}, 500);
+                });
+            });
+        </script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>
