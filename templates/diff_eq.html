@@ -293,6 +293,55 @@
                 alert('Произошла ошибка при решении уравнения');
             });
         });
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const type = document.getElementById('equationType').value;
+            const order = type === '2' ? document.getElementById('equationOrder').value : null;
+            
+            fetch('/generate_ode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: type,
+                    order: order
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const equationResult = document.getElementById('equationResult');
+                const equationTypeDisplay = document.getElementById('equationTypeDisplay');
+                const equationContent = document.getElementById('equationContent');
+                
+                if (Array.isArray(data)) {
+                    equationTypeDisplay.textContent = 'Все типы уравнений:';
+                    let content = '<div class="all-equations-container">';
+                    data.forEach(eq => {
+                        content += `
+                            <div class="equation-item mb-3">
+                                <div class="equation-type font-weight-bold">${eq.type}</div>
+                                <div class="equation-math">$$${eq.equation}$$</div>
+                            </div>
+                        `;
+                    });
+                    content += '</div>';
+                    equationContent.innerHTML = content;
+                } else if (data.error) {
+                    equationTypeDisplay.textContent = 'Ошибка';
+                    equationContent.innerHTML = data.error;
+                } else {
+                    equationTypeDisplay.textContent = data.type;
+                    equationContent.innerHTML = `$$${data.equation}$$`;
+                }
+                
+                equationResult.style.display = 'block';
+                MathJax.typeset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при генерации уравнения');
+            });
+        });
         
         // Функция для отрисовки графика
         function drawChart(xValues, yValues, methodName) {
@@ -347,5 +396,39 @@
         }
     });
     </script>
+    <style>
+        .all-equations-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .equation-item {
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .equation-type {
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        .equation-math {
+            text-align: center;
+        }
+        /* Добавляем скроллбар для контейнера с уравнениями */
+        .all-equations-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .all-equations-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .all-equations-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .all-equations-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </body>
 </html>

@@ -280,12 +280,14 @@ def generate_ode():
             # Генерация всех типов уравнений
             equations = []
             
+            # Уравнение, разрешенное относительно производной
             F = generate_explicit()
             equations.append({
                 'type': 'Уравнение, разрешенное относительно производной',
                 'equation': f"\\frac{{d{y_alt}}}{{d{x_alt}}} = {latex(F)}"
             })
             
+            # Линейное уравнение
             order = random.randint(1, 3)
             linear_ode = generate_linear_ode(order)
             equations.append({
@@ -293,36 +295,42 @@ def generate_ode():
                 'equation': latex(linear_ode)
             })
             
+            # Уравнение с разделенными переменными
             f_x, g_y = generate_separated()
             equations.append({
                 'type': 'Уравнение с разделенными переменными',
                 'equation': f"({latex(f_x)}) \\, d{x_alt} + ({latex(g_y)}) \\, d{y_alt} = 0"
             })
             
+            # Уравнение с разделяющимися переменными
             fg, hk = generate_separable()
             equations.append({
                 'type': 'Уравнение с разделяемыми переменными',
                 'equation': f"({latex(fg)}) \\, d{x_alt} + ({latex(hk)}) \\, d{y_alt} = 0"
             })
             
+            # Однородное уравнение
             f_homogeneous = generate_homogeneous()
             equations.append({
                 'type': 'Однородное уравнение',
                 'equation': f"\\frac{{d{y_alt}}}{{d{x_alt}}} = {latex(f_homogeneous)}"
             })
             
+            # Уравнение, приводимое к однородному
             numerator, denominator = generate_to_homogeneous()
             equations.append({
                 'type': 'Уравнение, приводимое к однородному',
                 'equation': f"\\frac{{d{y_alt}}}{{d{x_alt}}} = \\frac{{{latex(numerator)}}}{{{latex(denominator)}}}"
             })
             
+            # Точное уравнение
             M_exact, N_exact = generate_exact()
             equations.append({
                 'type': 'Точное уравнение в полных дифференциалах',
                 'equation': f"({latex(M_exact)}) \\, d{x_alt} + ({latex(N_exact)}) \\, d{y_alt} = 0"
             })
             
+            # Неточное уравнение
             M_inexact, N_inexact = generate_inexact()
             equations.append({
                 'type': 'Неточное уравнение в полных дифференциалах',
