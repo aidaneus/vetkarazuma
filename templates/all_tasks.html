@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Генератор всех типов заданий</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bh.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bh-style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Генератор всех типов заданий</h1>
+        <button id="generateBtn">Сгенерировать задания</button>
+        <div id="tasksContainer"></div>
+    </div>
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/generate_ode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ type: "9" })
+                });
+                
+                if (!response.ok) throw new Error('Ошибка генерации');
+                
+                const tasks = await response.json();
+                const container = document.getElementById('tasksContainer');
+                container.innerHTML = '';
+                
+                tasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = 'task';
+                    taskElement.innerHTML = `
+                        <h3>${task.type}</h3>
+                        <div>$$${task.equation}$$</div>
+                    `;
+                    container.appendChild(taskElement);
+                });
+                
+                // Обновляем MathJax после добавления новых уравнений
+                if (window.MathJax) {
+                    MathJax.typeset();
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при генерации заданий');
+            }
+        });
+    </script>
+</body>
+</html>

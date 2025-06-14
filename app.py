@@ -30,7 +30,9 @@ def linear_algebra():
 @app.route('/matrix_calculator')
 def matrix_calculator():
     return render_template('matrix_calculator.html')
-
+@app.route('/all_tasks')
+def all_tasks():
+    return render_template('all_tasks.html')
 @app.route('/solve_ode', methods=['POST'])
 def solve_ode():
     from backend.milya import euler_method, runge_kutta_method, isocline_method, parse_equation

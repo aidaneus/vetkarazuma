@@ -5,7 +5,6 @@ import random
 
 # блок 1 - технический
 
-random.seed(14) # число для стабильности теста, при запуске быть не должно
 x = symbols('x')
 y = Function('y')(x)  # y как функция от x для линейных ДУ
 x_alt, y_alt = symbols('x y')  # Для остальных типов уравнений
@@ -31,6 +30,11 @@ def generate_expression():
         lambda: (generate_coeff()*x_alt**random.randint(1,3) + generate_coeff()*sympy.sin(generate_trig_arg(y_alt))) * generate_coeff(),
         lambda: (generate_coeff()*sympy.cos(generate_trig_arg(x_alt))) + (generate_coeff()*y_alt**random.randint(1,3)) * generate_coeff(),
         lambda: (generate_coeff()*x_alt**random.randint(1,3) + generate_coeff()*sympy.cos(generate_trig_arg(y_alt))) * generate_coeff(),
+
+        lambda: (generate_coeff()*sympy.tan(generate_trig_arg(x_alt)) + generate_coeff()*y_alt**random.randint(1,3)) * generate_coeff(),
+        lambda: (generate_coeff()*x_alt**random.randint(1,3) + generate_coeff()*sympy.tan(generate_trig_arg(y_alt))) * generate_coeff(),
+        lambda: (generate_coeff()*sympy.cot(generate_trig_arg(x_alt)) + generate_coeff()*y_alt**random.randint(1,3)) * generate_coeff(),
+        lambda: (generate_coeff()*x_alt**random.randint(1,3) + generate_coeff()*sympy.cot(generate_trig_arg(y_alt))) * generate_coeff()
     ]
     return random.choice(functions)()
 
