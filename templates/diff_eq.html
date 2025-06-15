@@ -28,14 +28,17 @@
             display: flex;
             margin-bottom: 20px;
             border-bottom: 1px solid #dee2e6;
+            overflow-x: auto;
+            white-space: nowrap;
         }
         .method-tab {
-            padding: 10px 20px;
+            padding: 10px 15px;
             cursor: pointer;
             border: 1px solid transparent;
             border-bottom: none;
             border-radius: 5px 5px 0 0;
             margin-right: 5px;
+            display: inline-block;
         }
         .method-tab.active {
             background-color: #f8f9fa;
@@ -47,6 +50,13 @@
         }
         .input-group {
             margin-bottom: 15px;
+        }
+        .model-params {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -147,6 +157,73 @@
                     <div class="method-tab active" data-method="euler">Метод Эйлера</div>
                     <div class="method-tab" data-method="runge-kutta">Метод Рунге-Кутты</div>
                     <div class="method-tab" data-method="isocline">Метод изоклин</div>
+                    <div class="method-tab" data-method="fitzhugh-nagumo">ФитцХью-Нагумо</div>
+                    <div class="method-tab" data-method="predator-prey">Хищник-Жертва</div>
+                    <div class="method-tab" data-method="heat-equation">Теплопроводность</div>
+                </div>
+                
+                <!-- Параметры для моделей -->
+                <div id="fitzhughParams" class="model-params">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="fitzhughIext">I_ext:</label>
+                            <input type="number" id="fitzhughIext" class="form-control" value="0.5" step="0.1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fitzhughEpsilon">ε:</label>
+                            <input type="number" id="fitzhughEpsilon" class="form-control" value="0.08" step="0.01">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fitzhughA">a:</label>
+                            <input type="number" id="fitzhughA" class="form-control" value="0.7" step="0.1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fitzhughB">b:</label>
+                            <input type="number" id="fitzhughB" class="form-control" value="0.8" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="predatorParams" class="model-params">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="predatorAlpha">α (жертвы):</label>
+                            <input type="number" id="predatorAlpha" class="form-control" value="1.1" step="0.1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="predatorBeta">β:</label>
+                            <input type="number" id="predatorBeta" class="form-control" value="0.4" step="0.1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="predatorDelta">δ:</label>
+                            <input type="number" id="predatorDelta" class="form-control" value="0.1" step="0.1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="predatorGamma">γ (хищники):</label>
+                            <input type="number" id="predatorGamma" class="form-control" value="0.4" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="heatParams" class="model-params">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="heatL">Длина стержня (L):</label>
+                            <input type="number" id="heatL" class="form-control" value="1" step="0.1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="heatT">Время (T):</label>
+                            <input type="number" id="heatT" class="form-control" value="0.1" step="0.1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="heatAlpha">α:</label>
+                            <input type="number" id="heatAlpha" class="form-control" value="0.01" step="0.001">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="heatNx">Число точек (nx):</label>
+                            <input type="number" id="heatNx" class="form-control" value="50" min="10">
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="solutionContainer" class="solution-container" style="display: none;">
@@ -201,120 +278,6 @@
                 
                 if (Array.isArray(data)) {
                     equationTypeDisplay.textContent = 'Все типы уравнений:';
-                    let content = '<ul class="list-unstyled">';
-                    data.forEach(eq => {
-                        content += `<li><strong>${eq.type}</strong>: ${eq.equation}</li>`;
-                    });
-                    content += '</ul>';
-                    equationContent.innerHTML = content;
-                } else if (data.error) {
-                    equationTypeDisplay.textContent = 'Ошибка';
-                    equationContent.innerHTML = data.error;
-                } else {
-                    equationTypeDisplay.textContent = data.type;
-                    equationContent.innerHTML = `$$${data.equation}$$`;
-                    
-                    // Автоматически заполняем поле для решения
-                    // const equationText = data.equation.replace(/\\frac\{d[y]\}\{d[x]\} = /, '');
-                    // document.getElementById('customEquation').value = equationText
-                    //     .replace(/\\, d[x] \+ \\, d[y] = 0/, '')
-                    //     .replace(/\{x\}/g, 'x')
-                    //     .replace(/\{y\}/g, 'y');
-                }
-                
-                equationResult.style.display = 'block';
-                MathJax.typeset();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Произошла ошибка при генерации уравнения');
-            });
-        });
-        
-        // Переключение методов решения
-        document.querySelectorAll('.method-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                currentMethod = this.dataset.method;
-                
-                // Если есть данные решения, перерисовываем график
-                if (document.getElementById('solutionContainer').style.display === 'block') {
-                    document.getElementById('solveBtn').click();
-                }
-            });
-        });
-        
-        // Обработчик решения уравнения
-        document.getElementById('solveBtn').addEventListener('click', function() {
-            const equation = document.getElementById('customEquation').value;
-            const x0 = parseFloat(document.getElementById('x0').value);
-            const y0 = parseFloat(document.getElementById('y0').value);
-            const h = parseFloat(document.getElementById('step').value);
-            const n = parseInt(document.getElementById('steps').value);
-            
-            if (!equation) {
-                alert('Пожалуйста, введите уравнение');
-                return;
-            }
-            
-            fetch('/solve_ode', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    equation: equation,
-                    x0: x0,
-                    y0: y0,
-                    h: h,
-                    n: n,
-                    method: currentMethod
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                    return;
-                }
-                
-                const solutionContainer = document.getElementById('solutionContainer');
-                const solutionMethod = document.getElementById('solutionMethod');
-                
-                solutionMethod.textContent = `Решение (${data.method})`;
-                solutionContainer.style.display = 'block';
-                
-                // Отрисовка графика
-                drawChart(data.x, data.y, data.method);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Произошла ошибка при решении уравнения');
-            });
-        });
-        document.getElementById('generateBtn').addEventListener('click', function() {
-            const type = document.getElementById('equationType').value;
-            const order = type === '2' ? document.getElementById('equationOrder').value : null;
-            
-            fetch('/generate_ode', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    type: type,
-                    order: order
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const equationResult = document.getElementById('equationResult');
-                const equationTypeDisplay = document.getElementById('equationTypeDisplay');
-                const equationContent = document.getElementById('equationContent');
-                
-                if (Array.isArray(data)) {
-                    equationTypeDisplay.textContent = 'Все типы уравнений:';
                     let content = '<div class="all-equations-container">';
                     data.forEach(eq => {
                         content += `
@@ -343,6 +306,264 @@
             });
         });
         
+        // Переключение методов решения и показ соответствующих параметров
+        document.querySelectorAll('.method-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentMethod = this.dataset.method;
+                
+                // Скрываем все параметры
+                document.querySelectorAll('.model-params').forEach(el => el.style.display = 'none');
+                
+                // Показываем нужные параметры
+                if (currentMethod === 'fitzhugh-nagumo') {
+                    document.getElementById('fitzhughParams').style.display = 'block';
+                } else if (currentMethod === 'predator-prey') {
+                    document.getElementById('predatorParams').style.display = 'block';
+                } else if (currentMethod === 'heat-equation') {
+                    document.getElementById('heatParams').style.display = 'block';
+                }
+                
+                // Если есть данные решения, перерисовываем график
+                if (document.getElementById('solutionContainer').style.display === 'block') {
+                    document.getElementById('solveBtn').click();
+                } else if (currentMethod === 'isocline') {
+                    drawIsoclineChart(data.x, data.y, data.field_data, data.method);
+                }
+                
+            });
+        });
+        
+        // Обработчик решения уравнения
+document.getElementById('solveBtn').addEventListener('click', function() {
+    let equation = document.getElementById('customEquation').value;
+    const x0 = parseFloat(document.getElementById('x0').value);
+    const y0 = parseFloat(document.getElementById('y0').value);
+    const h = parseFloat(document.getElementById('step').value);
+    const n = parseInt(document.getElementById('steps').value);
+    
+    let requestData = {
+        x0: x0,
+        y0: y0,
+        h: h,
+        n: n,
+        method: currentMethod
+    };
+    
+    // Добавляем параметры для специальных моделей
+    if (currentMethod === 'fitzhugh-nagumo') {
+        requestData.fitzhughIext = parseFloat(document.getElementById('fitzhughIext').value);
+        requestData.fitzhughEpsilon = parseFloat(document.getElementById('fitzhughEpsilon').value);
+        requestData.fitzhughA = parseFloat(document.getElementById('fitzhughA').value);
+        requestData.fitzhughB = parseFloat(document.getElementById('fitzhughB').value);
+    } else if (currentMethod === 'predator-prey') {
+        requestData.predatorAlpha = parseFloat(document.getElementById('predatorAlpha').value);
+        requestData.predatorBeta = parseFloat(document.getElementById('predatorBeta').value);
+        requestData.predatorDelta = parseFloat(document.getElementById('predatorDelta').value);
+        requestData.predatorGamma = parseFloat(document.getElementById('predatorGamma').value);
+    } else if (currentMethod === 'heat-equation') {
+        requestData.heatL = parseFloat(document.getElementById('heatL').value);
+        requestData.heatT = parseFloat(document.getElementById('heatT').value);
+        requestData.heatAlpha = parseFloat(document.getElementById('heatAlpha').value);
+        requestData.heatNx = parseInt(document.getElementById('heatNx').value);
+    } else if (!equation) {
+        alert('Пожалуйста, введите уравнение');
+        return;
+    } else {
+        requestData.equation = equation;
+    }
+    
+    fetch('/solve_ode', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        
+        const solutionContainer = document.getElementById('solutionContainer');
+        const solutionMethod = document.getElementById('solutionMethod');
+        
+        solutionMethod.textContent = `Решение (${data.method})`;
+        solutionContainer.style.display = 'block';
+        
+        // Отрисовка графика
+        if (currentMethod === 'heat-equation') {
+            drawHeatChart(data.x, data.t, data.u);
+        } else if (currentMethod === 'fitzhugh-nagumo' || currentMethod === 'predator-prey') {
+            drawPhasePortrait(data.x, data.y, data.method);
+        } else {
+            drawChart(data.x, data.y, data.method);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при решении уравнения');
+    });
+});
+
+// Функция для отрисовки фазового портрета
+function drawPhasePortrait(xValues, yValues, methodName) {
+    const ctx = document.getElementById('solutionChart').getContext('2d');
+    
+    if (solutionChart) {
+        solutionChart.destroy();
+    }
+    
+    // Определяем метки осей в зависимости от модели
+    let xLabel, yLabel;
+    if (methodName.includes('ФитцХью')) {
+        xLabel = 'Мембранный потенциал (v)';
+        yLabel = 'Восстановительная переменная (w)';
+    } else if (methodName.includes('хищник')) {
+        xLabel = 'Жертвы (x)';
+        yLabel = 'Хищники (y)';
+    } else {
+        xLabel = 'x';
+        yLabel = 'y';
+    }
+    
+    solutionChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: methodName,
+                data: xValues.map((x, i) => ({x: x, y: yValues[i]})),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: xLabel
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: yLabel
+                    }
+                }
+            }
+        }
+    });
+}
+
+        
+        // Функция для решения уравнения теплопроводности
+        function solveHeatEquation() {
+            const L = parseFloat(document.getElementById('heatL').value);
+            const T = parseFloat(document.getElementById('heatT').value);
+            const alpha = parseFloat(document.getElementById('heatAlpha').value);
+            const nx = parseInt(document.getElementById('heatNx').value);
+            const nt = parseInt(document.getElementById('steps').value);
+            
+            // Здесь должен быть вызов к серверу для решения уравнения теплопроводности
+            // В демонстрационных целях просто создадим фиктивные данные
+            const x = Array.from({length: nx}, (_, i) => i * L / (nx - 1));
+            const t = Array.from({length: nt}, (_, i) => i * T / nt);
+            const u = [];
+            
+            for (let n = 0; n < nt; n++) {
+                u[n] = [];
+                for (let i = 0; i < nx; i++) {
+                    // Простое аналитическое решение для демонстрации
+                    u[n][i] = Math.sin(Math.PI * x[i] / L) * Math.exp(-alpha * (Math.PI/L)**2 * t[n]);
+                }
+            }
+            
+            const solutionContainer = document.getElementById('solutionContainer');
+            const solutionMethod = document.getElementById('solutionMethod');
+            
+            solutionMethod.textContent = "Решение уравнения теплопроводности";
+            solutionContainer.style.display = 'block';
+            
+            // Отрисовка графика
+            drawHeatChart(x, t, u);
+        }
+        
+        function drawIsoclineChart(xValues, yValues, fieldData, methodName) {
+    const ctx = document.getElementById('solutionChart').getContext('2d');
+    
+    if (solutionChart) {
+        solutionChart.destroy();
+    }
+    
+    // Создаем график с двумя осями
+    solutionChart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [
+                {
+                    label: 'Решение',
+                    data: xValues.map((x, i) => ({x: x, y: yValues[i]})),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    pointRadius: 5,
+                    showLine: true
+                },
+                {
+                    label: 'Поле направлений',
+                    data: convertFieldData(fieldData),
+                    pointRadius: 0,
+                    showLine: false,
+                    borderColor: 'rgba(255, 99, 132, 0.1)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'x'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'y'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Вспомогательная функция для преобразования данных поля направлений
+function convertFieldData(fieldData) {
+    const result = [];
+    const X = fieldData.X;
+    const Y = fieldData.Y;
+    const slopes = fieldData.slopes;
+    
+    for (let i = 0; i < X.length; i++) {
+        for (let j = 0; j < Y.length; j++) {
+            result.push({
+                x: X[i][j],
+                y: Y[i][j],
+            });
+        }
+    }
+    
+    return result;
+}
         // Функция для отрисовки графика
         function drawChart(xValues, yValues, methodName) {
             const ctx = document.getElementById('solutionChart').getContext('2d');
@@ -358,6 +579,8 @@
                 case 'Метод Эйлера': color = 'rgba(54, 162, 235, 1)'; break;
                 case 'Метод Рунге-Кутты 4-го порядка': color = 'rgba(75, 192, 192, 1)'; break;
                 case 'Метод изоклин': color = 'rgba(255, 99, 132, 1)'; break;
+                case 'ФитцХью-Нагумо': color = 'rgba(153, 102, 255, 1)'; break;
+                case 'Хищник-Жертва': color = 'rgba(255, 159, 64, 1)'; break;
                 default: color = 'rgba(153, 102, 255, 1)';
             }
             
@@ -388,6 +611,53 @@
                             title: {
                                 display: true,
                                 text: 'y'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Функция для отрисовки графика теплопроводности
+        function drawHeatChart(x, t, u) {
+            const ctx = document.getElementById('solutionChart').getContext('2d');
+            
+            // Удаляем предыдущий график, если он есть
+            if (solutionChart) {
+                solutionChart.destroy();
+            }
+            
+            // Создаем набор данных для последнего временного слоя
+            const lastTimeStep = u.length - 1;
+            const labels = x;
+            const data = u[lastTimeStep];
+            
+            solutionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Распределение температуры (t=${t[lastTimeStep].toFixed(3)})`,
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Пространство (x)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Температура (u)'
                             }
                         }
                     }

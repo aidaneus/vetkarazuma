@@ -29,17 +29,17 @@ def runge_kutta_method(f, x0, y0, h, n):
         x[i+1] = x[i] + h
     return x, y
 
-# Метод изоклин (упрощенная реализация)
-def isocline_method(f, x0, y0, h, n):
-    x = np.linspace(x0 - 2, x0 + 2, 20)
-    y = np.linspace(y0 - 2, y0 + 2, 20)
-    X, Y = np.meshgrid(x, y)
-    slopes = f(X, Y)
+# # Метод изоклин (упрощенная реализация)
+# def isocline_method(f, x0, y0, h, n):
+#     x = np.linspace(x0 - 2, x0 + 2, 20)
+#     y = np.linspace(y0 - 2, y0 + 2, 20)
+#     X, Y = np.meshgrid(x, y)
+#     slopes = f(X, Y)
     
-    # Решение методом Эйлера для траектории
-    x_traj, y_traj = euler_method(f, x0, y0, h, n)
+#     # Решение методом Эйлера для траектории
+#     x_traj, y_traj = euler_method(f, x0, y0, h, n)
     
-    return x_traj, y_traj, (X, Y, slopes)
+#     return x_traj, y_traj, (X, Y, slopes)
 
 # Функция для преобразования строки уравнения в функцию
 def parse_equation(equation_str):
@@ -82,17 +82,26 @@ def runge_kutta_method(f, x0, y0, h, n):
         x[i+1] = x[i] + h
     return x, y
 
-#изоклин, но упрощённый
+
 def isocline_method(f, x0, y0, h, n):
+    # Решение методом Эйлера для траектории
     x = np.zeros(n+1)
     y = np.zeros(n+1)
     x[0] = x0
     y[0] = y0
+    
     for i in range(n):
-        slope = f(x[i], y[i])  #Наклон (значение производной)
+        slope = f(x[i], y[i])
         y[i+1] = y[i] + h * slope
         x[i+1] = x[i] + h
-    return x, y
+    
+    # Создаем сетку для изоклин
+    x_grid = np.linspace(x0 - 2, x0 + 2, 20)
+    y_grid = np.linspace(y0 - 2, y0 + 2, 20)
+    X, Y = np.meshgrid(x_grid, y_grid)
+    slopes = f(X, Y)
+    
+    return x, y, (X, Y, slopes)
 
 #ввод
 def input_equation():
@@ -197,17 +206,17 @@ def runge_kutta_method(f, x0, y0, h, n):
         x[i+1] = x[i] + h
     return x, y
 
-# Изоклин (упрощённый)
-def isocline_method(f, x0, y0, h, n):
-    x = np.zeros(n+1)
-    y = np.zeros(n+1)
-    x[0] = x0
-    y[0] = y0
-    for i in range(n):
-        slope = f(x[i], y[i])
-        y[i+1] = y[i] + h * slope
-        x[i+1] = x[i] + h
-    return x, y
+# # Изоклин (упрощённый)
+# def isocline_method(f, x0, y0, h, n):
+#     x = np.zeros(n+1)
+#     y = np.zeros(n+1)
+#     x[0] = x0
+#     y[0] = y0
+#     for i in range(n):
+#         slope = f(x[i], y[i])
+#         y[i+1] = y[i] + h * slope
+#         x[i+1] = x[i] + h
+#     return x, y
 
 #ФитцХью — Нагумо
 def fitzhugh_nagumo_model(v, w, I_ext=0.5, epsilon=0.08, a=0.7, b=0.8):
@@ -260,76 +269,112 @@ if __name__ == "__main__": #мб поменяю
     # Изоклин
     x_iso, y_iso = isocline_method(f, x0, y0, h, n)
 
-    # Модель ФитцХью — Нагумо
-    v0, w0 = 0, 0
+# Модель ФитцХью-Нагумо
     v = np.zeros(n+1)
     w = np.zeros(n+1)
-    v[0], w[0] = v0, w0
+    v[0], w[0] = x0, y0
     for i in range(n):
         dvdt, dwdt = fitzhugh_nagumo_model(v[i], w[i])
         v[i+1] = v[i] + h * dvdt
         w[i+1] = w[i] + h * dwdt
-
+    
     # Модель хищник-жертва
-    x_pred, y_pred = 10, 5
     x_pp = np.zeros(n+1)
     y_pp = np.zeros(n+1)
-    x_pp[0], y_pp[0] = x_pred, y_pred
+    x_pp[0], y_pp[0] = x0, y0
     for i in range(n):
         dxdt, dydt = predatormodel(x_pp[i], y_pp[i])
         x_pp[i+1] = x_pp[i] + h * dxdt
         y_pp[i+1] = y_pp[i] + h * dydt
 
+# Уравнение теплопроводности
+def heat_equation_solution(L=1, T=1, alpha=0.01, nx=20, nt=100):
+    dx = L / (nx - 1)
+    dt = T / nt
+    r = alpha * dt / dx**2
+    
+    x = np.linspace(0, L, nx)
+    t = np.linspace(0, T, nt)
+    u = np.zeros((nt, nx))
+    
+    u[0, :] = np.sin(np.pi * x / L)
+    u[:, 0] = 0
+    u[:, -1] = 0
+    
+    for n in range(0, nt-1):
+        for i in range(1, nx-1):
+            u[n+1, i] = u[n, i] + r * (u[n, i+1] - 2*u[n, i] + u[n, i-1])
+    
+    return x, t, u
 
-    plt.figure(figsize=(20, 10))
+# Метод изоклин (улучшенная реализация)
+def isocline_method(f, x0, y0, h, n):
+    # Решение методом Эйлера для траектории
+    x = np.zeros(n+1)
+    y = np.zeros(n+1)
+    x[0] = x0
+    y[0] = y0
+    
+    for i in range(n):
+        slope = f(x[i], y[i])
+        y[i+1] = y[i] + h * slope
+        x[i+1] = x[i] + h
+    
+    # Создаем сетку для изоклин
+    x_grid = np.linspace(x0 - 2, x0 + 2, 20)
+    y_grid = np.linspace(y0 - 2, y0 + 2, 20)
+    X, Y = np.meshgrid(x_grid, y_grid)
+    slopes = f(X, Y)
+    
+    return x, y, (X, Y, slopes)
 
-    # Метод Эйлера
-    plt.subplot(2, 3, 1)
-    plt.plot(x_euler, y_euler, label='Метод Эйлера', color='blue')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title('Метод Эйлера')
-    plt.grid(True)
-    plt.legend()
+    # # Метод Эйлера
+    # plt.subplot(2, 3, 1)
+    # plt.plot(x_euler, y_euler, label='Метод Эйлера', color='blue')
+    # plt.xlabel('x')
+    # plt.ylabel('y')
+    # plt.title('Метод Эйлера')
+    # plt.grid(True)
+    # plt.legend()
 
-    # Метод Рунге-Кутты
-    plt.subplot(2, 3, 2)
-    plt.plot(x_rk, y_rk, label='Метод Рунге-Кутты', color='green')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title('Метод Рунге-Кутты')
-    plt.grid(True)
-    plt.legend()
+    # # Метод Рунге-Кутты
+    # plt.subplot(2, 3, 2)
+    # plt.plot(x_rk, y_rk, label='Метод Рунге-Кутты', color='green')
+    # plt.xlabel('x')
+    # plt.ylabel('y')
+    # plt.title('Метод Рунге-Кутты')
+    # plt.grid(True)
+    # plt.legend()
 
-    # Метод изоклин
-    plt.subplot(2, 3, 3)
-    plt.plot(x_iso, y_iso, label='Метод изоклин', color='red')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.title('Метод изоклин')
-    plt.grid(True)
-    plt.legend()
+    # # Метод изоклин
+    # plt.subplot(2, 3, 3)
+    # plt.plot(x_iso, y_iso, label='Метод изоклин', color='red')
+    # plt.xlabel('x')
+    # plt.ylabel('y')
+    # plt.title('Метод изоклин')
+    # plt.grid(True)
+    # plt.legend()
 
-    # Модель ФитцХью — Нагумо
-    plt.subplot(2, 3, 4)
-    plt.plot(v, w, label='Модель ФитцХью — Нагумо', color='purple')
-    plt.xlabel('v (мембранный потенциал)')
-    plt.ylabel('w (восстановительная переменная)')
-    plt.title('Модель ФитцХью — Нагумо')
-    plt.grid(True)
-    plt.legend()
+    # # Модель ФитцХью — Нагумо
+    # plt.subplot(2, 3, 4)
+    # plt.plot(v, w, label='Модель ФитцХью — Нагумо', color='purple')
+    # plt.xlabel('v (мембранный потенциал)')
+    # plt.ylabel('w (восстановительная переменная)')
+    # plt.title('Модель ФитцХью — Нагумо')
+    # plt.grid(True)
+    # plt.legend()
 
-    # Модель хищник-жертва
-    plt.subplot(2, 3, 5)
-    plt.plot(x_pp, y_pp, label='Модель хищник-жертва', color='orange')
-    plt.xlabel('Жертвы (x)')
-    plt.ylabel('Хищники (y)')
-    plt.title('Модель хищник-жертва')
-    plt.grid(True)
-    plt.legend()
+    # # Модель хищник-жертва
+    # plt.subplot(2, 3, 5)
+    # plt.plot(x_pp, y_pp, label='Модель хищник-жертва', color='orange')
+    # plt.xlabel('Жертвы (x)')
+    # plt.ylabel('Хищники (y)')
+    # plt.title('Модель хищник-жертва')
+    # plt.grid(True)
+    # plt.legend()
 
-    plt.tight_layout()
-    plt.show()
+    # plt.tight_layout()
+    # plt.show()
 
 import numpy as np
 import matplotlib.pyplot as plt

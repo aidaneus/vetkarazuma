@@ -36,9 +36,10 @@ def all_tasks():
 @app.route('/solve_ode', methods=['POST'])
 def solve_ode():
     from backend.milya import euler_method, runge_kutta_method, isocline_method, parse_equation
+    from backend.milya import fitzhugh_nagumo_model, predatormodel, heat_equation_solution
     
     data = request.json
-    equation_str = data.get('equation')
+    equation_str = data.get('equation', '')
     x0 = float(data.get('x0'))
     y0 = float(data.get('y0'))
     h = float(data.get('h'))
@@ -46,10 +47,89 @@ def solve_ode():
     method = data.get('method', 'euler')
     
     try:
-        # Преобразуем строку уравнения в функцию
+        if method == 'fitzhugh-nagumo':
+            I_ext = float(data.get('fitzhughIext', 0.5))
+            epsilon = float(data.get('fitzhughEpsilon', 0.08))
+            a = float(data.get('fitzhughA', 0.7))
+            b = float(data.get('fitzhughB', 0.8))
+            
+            v = np.zeros(n+1)
+            w = np.zeros(n+1)
+            v[0], w[0] = x0, y0
+            for i in range(n):
+                dvdt, dwdt = fitzhugh_nagumo_model(v[i], w[i], I_ext, epsilon, a, b)
+                v[i+1] = v[i] + h * dvdt
+                w[i+1] = w[i] + h * dwdt
+            
+            return jsonify({
+                'method': 'Модель ФитцХью-Нагумо',
+                'x': v.tolist(),
+                'y': w.tolist()
+            })
+            
+        elif method == 'predator-prey':
+            alpha = float(data.get('predatorAlpha', 1.1))
+            beta = float(data.get('predatorBeta', 0.4))
+            delta = float(data.get('predatorDelta', 0.1))
+            gamma = float(data.get('predatorGamma', 0.4))
+            
+            x_pp = np.zeros(n+1)
+            y_pp = np.zeros(n+1)
+            x_pp[0], y_pp[0] = x0, y0
+            for i in range(n):
+                dxdt, dydt = predatormodel(x_pp[i], y_pp[i], alpha, beta, delta, gamma)
+                x_pp[i+1] = x_pp[i] + h * dxdt
+                y_pp[i+1] = y_pp[i] + h * dydt
+            
+            return jsonify({
+                'method': 'Модель хищник-жертва',
+                'x': x_pp.tolist(),
+                'y': y_pp.tolist()
+            })
+            
+        elif method == 'heat-equation':
+            L = float(data.get('heatL', 1))
+            T = float(data.get('heatT', 0.1))
+            alpha_val = float(data.get('heatAlpha', 0.01))
+            nx = int(data.get('heatNx', 50))
+            
+            x, t, u = heat_equation_solution(L=L, T=T, alpha=alpha_val, nx=nx, nt=n)
+            return jsonify({
+                'method': 'Уравнение теплопроводности',
+                'x': x.tolist(),
+                't': t.tolist(),
+                'u': u.tolist()
+            })
+            
+        elif method == 'predator-prey':
+            # Параметры модели
+            alpha = float(data.get('predatorAlpha', 1.1))
+            beta = float(data.get('predatorBeta', 0.4))
+            delta = float(data.get('predatorDelta', 0.1))
+            gamma = float(data.get('predatorGamma', 0.4))
+            
+            # Решаем систему уравнений
+            x_pp = np.zeros(n+1)
+            y_pp = np.zeros(n+1)
+            x_pp[0], y_pp[0] = x0, y0
+            for i in range(n):
+                dxdt, dydt = predatormodel(x_pp[i], y_pp[i], alpha, beta, delta, gamma)
+                x_pp[i+1] = x_pp[i] + h * dxdt
+                y_pp[i+1] = y_pp[i] + h * dydt
+            
+            return jsonify({
+                'method': 'Модель хищник-жертва',
+                'x': x_pp.tolist(),
+                'y': y_pp.tolist()
+            })
+            
+        elif method == 'heat-equation':
+            # Обработка уравнения теплопроводности
+            return solve_heat_equation(data)
+            
+        # Обычные методы решения ОДУ
         f = parse_equation(equation_str)
         
-        # Решаем уравнение выбранным методом
         if method == 'euler':
             x_vals, y_vals = euler_method(f, x0, y0, h, n)
             method_name = "Метод Эйлера"
@@ -62,16 +142,47 @@ def solve_ode():
         else:
             return jsonify({'error': 'Неизвестный метод решения'}), 400
         
-        # Преобразуем numpy массивы в списки для JSON
         return jsonify({
             'method': method_name,
             'x': x_vals.tolist(),
             'y': y_vals.tolist()
         })
-    
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+def solve_heat_equation(data):
+    # Реализация решения уравнения теплопроводности
+    L = float(data.get('heatL', 1))
+    T = float(data.get('heatT', 0.1))
+    alpha = float(data.get('heatAlpha', 0.01))
+    nx = int(data.get('heatNx', 50))
+    nt = int(data.get('steps', 100))
+    
+    dx = L / (nx - 1)
+    dt = T / nt
+    
+    x = np.linspace(0, L, nx)
+    t = np.linspace(0, T, nt)
+    u = np.zeros((nt, nx))
+    
+    # Начальное условие
+    u[0, :] = np.sin(np.pi * x / L)
+    
+    # Граничные условия
+    u[:, 0] = 0
+    u[:, -1] = 0
+    
+    for n in range(0, nt-1):
+        for i in range(1, nx-1):
+            u[n+1, i] = u[n, i] + alpha * dt / dx**2 * (u[n, i+1] - 2*u[n, i] + u[n, i-1])
+    
+    return jsonify({
+        'method': 'Уравнение теплопроводности',
+        'x': x.tolist(),
+        't': t.tolist(),
+        'u': u.tolist()
+    })
     
 @app.route('/matrix_operation', methods=['POST'])
 def matrix_operation():
